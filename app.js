@@ -388,6 +388,9 @@ window.openGroupChat = (id) => {
     }
     send({ type: 'get_chat_history', chat_id: id });
     hideEl('empty-chat'); showEl('chat-content');
+    // Mobile: show chat panel, hide sidebar
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('chat-panel').style.display = 'flex';
     renderChats(); renderMessages();
 };
 
@@ -402,7 +405,18 @@ window.openPrivateChat = (username) => {
     hideEl('empty-chat'); showEl('chat-content');
     hideEl('search-results'); showEl('chats-list');
     document.getElementById('search-input').value = '';
+    // Mobile: show chat panel, hide sidebar
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('chat-panel').style.display = 'flex';
     renderMessages();
+};
+
+// Mobile: back to chats list
+window.backToChats = () => {
+    document.getElementById('chat-panel').style.display = 'none';
+    document.getElementById('sidebar').style.display = 'flex';
+    currentChat = null;
+    currentChatType = null;
 };
 
 

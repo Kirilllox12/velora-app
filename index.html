@@ -2,18 +2,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Velora</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
-        <div class="titlebar">
-            <div class="titlebar-drag"><span class="logo">VELORA</span></div>
-            <div class="titlebar-buttons">
-                <button onclick="window.minimize()">-</button>
-                <button onclick="window.maximize()">O</button>
-                <button class="btn-close" onclick="window.closeApp()">X</button>
-            </div>
+    <div class="app mobile">
+        <div class="titlebar mobile-titlebar">
+            <span class="logo">VELORA</span>
         </div>
 
         <div id="auth-screen" class="screen" style="display:flex">
@@ -39,13 +35,12 @@
         </div>
 
         <div id="chat-screen" class="screen" style="display:none">
-            <div class="chat-layout">
-                <div class="sidebar glass">
+            <div class="chat-layout mobile-layout">
+                <div class="sidebar glass mobile-sidebar" id="sidebar">
                     <div class="sidebar-header">
-                        <button class="btn-menu" onclick="window.showMainSettings()">M</button>
+                        <button class="btn-menu" onclick="window.showMainSettings()">☰</button>
                         <div class="search-box">
-                            <input type="text" id="search-input" placeholder="Поиск @username..." oninput="window.doSearch()" onkeydown="if(event.key==='Escape')window.clearSearch()">
-                            <button class="search-clear" onclick="window.clearSearch()" style="display:none" id="search-clear-btn">X</button>
+                            <input type="text" id="search-input" placeholder="Поиск @username..." oninput="window.doSearch()">
                         </div>
                     </div>
                     <div class="sidebar-actions">
@@ -58,12 +53,13 @@
                     <div class="search-results" id="search-results" style="display:none"></div>
                 </div>
                 
-                <div class="chat-panel glass">
+                <div class="chat-panel glass mobile-chat" id="chat-panel" style="display:none">
                     <div id="empty-chat" class="empty-chat"><div class="empty-text">Выберите чат</div></div>
                     <div id="chat-content" style="display:none;flex-direction:column;height:100%">
-                        <div class="chat-header" onclick="window.showChatProfile()">
+                        <div class="chat-header">
+                            <button class="btn-back" onclick="window.backToChats()">←</button>
                             <div class="chat-icon" id="chat-avatar"></div>
-                            <div class="chat-header-info">
+                            <div class="chat-header-info" onclick="window.showChatProfile()">
                                 <div class="chat-header-name" id="chat-title">Чат</div>
                                 <div class="chat-header-status" id="chat-subtitle"></div>
                             </div>
@@ -72,13 +68,13 @@
                         <div class="message-input-area">
                             <div id="reply-preview" class="reply-preview-input" style="display:none">
                                 <div class="reply-info"><span>Ответ <b id="reply-to-name"></b></span><span id="reply-to-text"></span></div>
-                                <button onclick="window.cancelReply()">X</button>
+                                <button onclick="window.cancelReply()">✕</button>
                             </div>
                             <div class="message-input">
                                 <button class="btn-attach" onclick="window.showAttachMenu()">+</button>
                                 <input type="text" id="message-text" placeholder="Сообщение...">
-                                <button class="btn-voice" id="voice-btn" onclick="window.startVoiceRecord()">mic</button>
-                                <button class="btn-send" onclick="window.sendMessage()">send</button>
+                                <button class="btn-voice" id="voice-btn" onclick="window.startVoiceRecord()">🎤</button>
+                                <button class="btn-send" onclick="window.sendMessage()">➤</button>
                             </div>
                         </div>
                     </div>
@@ -87,19 +83,19 @@
         </div>
     </div>
 
+
     <div id="attach-menu" class="popup-menu" style="display:none">
         <div class="popup-content glass">
-            <button onclick="window.attachPhoto()">Фото</button>
-            <button onclick="window.attachVideo()">Видео</button>
-            <button onclick="window.attachFile()">Файл</button>
-            <button onclick="window.startCircleRecord()">Кружок</button>
+            <button onclick="window.attachPhoto()">📷 Фото</button>
+            <button onclick="window.attachVideo()">🎬 Видео</button>
+            <button onclick="window.attachFile()">📎 Файл</button>
+            <button onclick="window.startCircleRecord()">⭕ Кружок</button>
         </div>
     </div>
 
     <div id="message-menu" class="context-menu glass" style="display:none">
         <button onclick="window.menuReply()">↩ Ответить</button>
         <button onclick="window.menuForward()">↗ Переслать</button>
-        <button id="menu-translate" onclick="window.menuTranslate()" style="display:none">🌍 Перевести</button>
         <div class="reaction-row">
             <button onclick="window.menuReaction('👍')">👍</button>
             <button onclick="window.menuReaction('❤️')">❤️</button>
@@ -114,43 +110,31 @@
     <!-- User Profile Modal -->
     <div id="user-profile-modal" class="modal" style="display:none">
         <div class="profile-view glass">
-            <div class="profile-header">
-                <button onclick="window.closeModal()">X</button>
-            </div>
+            <div class="profile-header"><button onclick="window.closeModal()">✕</button></div>
             <div class="profile-avatar-section">
                 <div class="avatar xlarge" id="profile-avatar">U</div>
                 <div class="profile-badges" id="profile-badges"></div>
             </div>
             <div class="profile-name" id="profile-name">User</div>
             <div class="profile-username" id="profile-username">@user</div>
-            <div class="profile-status" id="profile-status"></div>
             <div class="profile-bio" id="profile-bio"></div>
-            <div class="profile-gifts" id="profile-gifts"></div>
             <div class="profile-actions">
                 <button class="btn-primary" onclick="window.openPrivateChatFromProfile()">Написать</button>
                 <button class="btn-secondary" onclick="window.sendGift()">Подарок</button>
-                <button class="btn-secondary" onclick="window.transferCrystals()">Кристаллы</button>
             </div>
         </div>
     </div>
 
-    <!-- Chat/Channel Profile Modal -->
+    <!-- Chat Profile Modal -->
     <div id="chat-profile-modal" class="modal" style="display:none">
         <div class="profile-view glass">
-            <div class="profile-header">
-                <button onclick="window.closeModal()">X</button>
-                <span id="chat-profile-type">Группа</span>
-                <button id="chat-edit-btn" onclick="window.editChat()" style="display:none">edit</button>
-            </div>
-            <div class="profile-avatar-section">
-                <div class="chat-icon xlarge" id="chat-profile-avatar">G</div>
-            </div>
+            <div class="profile-header"><button onclick="window.closeModal()">✕</button><span id="chat-profile-type">Группа</span></div>
+            <div class="profile-avatar-section"><div class="chat-icon xlarge" id="chat-profile-avatar">G</div></div>
             <div class="profile-name" id="chat-profile-name">Чат</div>
             <div class="profile-bio" id="chat-profile-desc"></div>
             <div class="profile-info">
-                <div class="info-row"><span>Ссылка</span><span id="chat-profile-link" onclick="window.copyLink()"></span></div>
+                <div class="info-row"><span>Ссылка</span><span id="chat-profile-link"></span></div>
                 <div class="info-row"><span>Участников</span><span id="chat-profile-members">0</span></div>
-                <div class="info-row"><span>Создатель</span><span id="chat-profile-owner"></span></div>
             </div>
             <div class="profile-actions">
                 <button class="btn-secondary" onclick="window.copyLink()">Копировать ссылку</button>
@@ -162,7 +146,7 @@
     <!-- Gift Modal -->
     <div id="gift-modal" class="modal" style="display:none">
         <div class="modal-content glass">
-            <h2>RKM Подарки</h2>
+            <h2>Подарки</h2>
             <div class="gifts-grid" id="gifts-grid"></div>
             <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
         </div>
@@ -182,10 +166,6 @@
     <div id="create-group-modal" class="modal" style="display:none">
         <div class="modal-content glass">
             <h2>Создать группу</h2>
-            <div class="chat-avatar-edit" onclick="window.pickChatAvatar('group')">
-                <div class="chat-icon" id="group-avatar">G</div>
-                <div class="avatar-overlay">фото</div>
-            </div>
             <div class="input-group"><input type="text" id="group-name" placeholder="Название"></div>
             <div class="input-group"><input type="text" id="group-desc" placeholder="Описание"></div>
             <label><input type="checkbox" id="group-public"> Публичная</label>
@@ -198,10 +178,6 @@
     <div id="create-channel-modal" class="modal" style="display:none">
         <div class="modal-content glass">
             <h2>Создать канал</h2>
-            <div class="chat-avatar-edit" onclick="window.pickChatAvatar('channel')">
-                <div class="chat-icon" id="channel-avatar">C</div>
-                <div class="avatar-overlay">фото</div>
-            </div>
             <div class="input-group"><input type="text" id="channel-name" placeholder="Название"></div>
             <div class="input-group"><input type="text" id="channel-desc" placeholder="Описание"></div>
             <label><input type="checkbox" id="channel-public"> Публичный</label>
@@ -220,11 +196,12 @@
         </div>
     </div>
 
+
     <!-- Main Settings -->
     <div id="main-settings" class="modal" style="display:none">
         <div class="settings-panel glass">
             <div class="settings-header">
-                <button onclick="window.closeModal()">X</button>
+                <button onclick="window.closeModal()">✕</button>
                 <span>Настройки</span>
             </div>
             <div class="profile-section" onclick="window.showMyProfile()">
@@ -245,11 +222,8 @@
                 <button onclick="window.showMyProfile()">Мой профиль</button>
                 <button id="support-btn" onclick="window.showSupportChat()">Поддержка</button>
                 <button id="inbox-btn" style="display:none" onclick="window.showSupportInbox()">Входящие обращения</button>
-                <button onclick="window.showPremiumModal()" class="premium-btn">Premium</button>
+                <button onclick="window.showPremiumModal()" class="premium-btn">⭐ Premium</button>
                 <button onclick="window.showAppearanceSettings()">Оформление</button>
-                <button onclick="window.showNotifSettings()">Уведомления</button>
-                <button onclick="window.showDeviceSettings()">Устройства</button>
-                <button onclick="window.showLanguageSettings()">Язык</button>
                 <button id="admin-btn" style="display:none" onclick="window.showAdminPanel()">Админ-панель</button>
                 <button class="danger" onclick="window.logout()">Выйти</button>
             </div>
@@ -260,20 +234,15 @@
     <div id="my-profile-modal" class="modal" style="display:none">
         <div class="settings-panel glass">
             <div class="settings-header">
-                <button onclick="window.backToSettings()">back</button>
+                <button onclick="window.backToSettings()">←</button>
                 <span>Мой профиль</span>
-                <button onclick="window.saveProfile()">save</button>
+                <button onclick="window.saveProfile()">✓</button>
             </div>
             <div class="avatar-edit" onclick="window.pickAvatar()">
                 <div class="avatar xlarge" id="edit-avatar">U</div>
-                <div class="avatar-overlay">фото</div>
             </div>
             <div class="form-section"><label>Имя</label><input type="text" id="edit-name"></div>
             <div class="form-section"><label>О себе</label><textarea id="edit-bio"></textarea></div>
-            <div class="my-gifts-section">
-                <label>Мои подарки</label>
-                <div class="my-gifts" id="my-gifts-list"></div>
-            </div>
             <div class="my-aliases-section">
                 <label>Дополнительные @username <span id="aliases-count">(0/0)</span></label>
                 <div class="my-aliases" id="my-aliases-list"></div>
@@ -289,7 +258,7 @@
     <div id="appearance-settings" class="modal" style="display:none">
         <div class="settings-panel glass">
             <div class="settings-header">
-                <button onclick="window.backToSettings()">back</button>
+                <button onclick="window.backToSettings()">←</button>
                 <span>Оформление</span>
             </div>
             <div class="form-section">
@@ -297,16 +266,7 @@
                 <div class="theme-options">
                     <button class="theme-btn active" onclick="window.setTheme('dark')">Тёмная</button>
                     <button class="theme-btn" onclick="window.setTheme('light')">Светлая</button>
-                    <button class="theme-btn" onclick="window.setTheme('purple')">Фиолетовая</button>
                 </div>
-            </div>
-            <div class="form-section">
-                <label>Размер шрифта</label>
-                <select id="font-size-select" onchange="window.setFontSize(this.value)">
-                    <option value="small">Маленький</option>
-                    <option value="medium" selected>Средний</option>
-                    <option value="large">Большой</option>
-                </select>
             </div>
             <div class="form-section">
                 <label>Цвет акцента</label>
@@ -315,75 +275,19 @@
         </div>
     </div>
 
-    <!-- Notification Settings -->
-    <div id="notif-settings" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
-                <button onclick="window.backToSettings()">back</button>
-                <span>Уведомления</span>
-            </div>
-            <div class="form-section">
-                <label class="toggle-label"><input type="checkbox" id="notif-sound" checked onchange="window.toggleSound()"> Звук уведомлений</label>
-            </div>
-            <div class="form-section">
-                <label class="toggle-label"><input type="checkbox" id="notif-desktop" checked> Уведомления на рабочем столе</label>
-            </div>
-            <div class="form-section">
-                <label class="toggle-label"><input type="checkbox" id="notif-preview" checked> Показывать текст</label>
-            </div>
-        </div>
-    </div>
-
-    <!-- Language Settings -->
-    <div id="language-settings" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
-                <button onclick="window.backToSettings()">back</button>
-                <span>Язык</span>
-            </div>
-            <div class="lang-list">
-                <button class="lang-btn active" onclick="window.setLang('ru',this)">Русский</button>
-                <button class="lang-btn" onclick="window.setLang('en',this)">English</button>
-                <button class="lang-btn" onclick="window.setLang('uk',this)">Українська</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Device Settings -->
-    <div id="device-settings" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
-                <button onclick="window.backToSettings()">back</button>
-                <span>Устройства</span>
-            </div>
-            <div class="form-section"><label>Микрофон</label><select id="mic-select"></select></div>
-            <div class="form-section"><label>Камера</label><select id="camera-select"></select></div>
-            <button class="btn-primary" style="margin:20px" onclick="window.saveDevices()">Сохранить</button>
-        </div>
-    </div>
-
     <!-- Admin Panel -->
     <div id="admin-panel" class="modal" style="display:none">
         <div class="admin-panel glass">
             <div class="settings-header">
-                <button onclick="window.closeModal()">X</button>
+                <button onclick="window.closeModal()">✕</button>
                 <span>Админ-панель</span>
-            </div>
-            <div class="admin-tabs">
-                <button class="active" onclick="window.showAdminTab('users')">Юзеры</button>
-                <button onclick="window.showAdminTab('stats')">Статистика</button>
-                <button onclick="window.showAdminTab('logs')">Логи</button>
-                <button onclick="window.showAdminTab('export')">Экспорт</button>
-                <button onclick="window.showAdminTab('premium')">💎 Premium</button>
             </div>
             <div class="admin-content" id="admin-content">
                 <div class="admin-section">
                     <div class="input-group"><input type="text" id="admin-username" placeholder="@username"></div>
-                    <div class="input-group"><input type="text" id="admin-value" placeholder="Значение (кристаллы/имя/причина/подарок)"></div>
-                    
-                    <!-- NFT Uses Section -->
+                    <div class="input-group"><input type="text" id="admin-value" placeholder="Значение"></div>
                     <div class="nft-uses-section">
-                        <label style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:8px;display:block">NFT Uses (доп. юзернеймы)</label>
+                        <label style="color:rgba(255,255,255,0.5);font-size:12px">NFT Uses</label>
                         <div class="nft-count-select">
                             <button class="nft-count-btn" onclick="window.setNftCount(1)">1</button>
                             <button class="nft-count-btn" onclick="window.setNftCount(2)">2</button>
@@ -392,53 +296,10 @@
                         <div id="nft-aliases-inputs" style="display:none;margin-top:10px"></div>
                         <button id="nft-give-btn" class="btn-nft-give" style="display:none" onclick="window.giveNftWithAliases()">Выдать NFT Uses</button>
                     </div>
-                    
                     <div class="admin-actions" id="admin-actions"></div>
                 </div>
             </div>
-            <div class="admin-stats" id="admin-stats" style="display:none">
-                <div id="stats-content"></div>
-            </div>
-            <div class="admin-logs" id="admin-logs" style="display:none">
-                <div class="input-group"><input type="text" id="logs-username" placeholder="@username"></div>
-                <button class="btn-primary" onclick="window.loadUserLogs()">Загрузить</button>
-                <div id="logs-content"></div>
-            </div>
-            <div class="admin-export" id="admin-export" style="display:none">
-                <button class="btn-primary" onclick="window.exportAllData()">Экспорт всех данных</button>
-                <button class="btn-secondary" onclick="window.exportUsers()">Экспорт пользователей</button>
-                <button class="btn-secondary" onclick="window.exportMessages()">Экспорт сообщений</button>
-                <div id="export-result"></div>
-            </div>
-            <div class="admin-premium" id="admin-premium" style="display:none">
-                <h3 style="margin-bottom:15px;color:#c084fc">Заявки на Premium</h3>
-                <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:15px">Проверьте оплату и подтвердите</p>
-                <div id="premium-requests-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Transfer Crystals -->
-    <div id="transfer-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Передать кристаллы</h2>
-            <p>Ваш баланс: <b id="transfer-balance">0</b> 💎</p>
-            <div class="input-group"><input type="text" id="transfer-to" placeholder="@username"></div>
-            <div class="input-group"><input type="number" id="transfer-amount" placeholder="Количество" min="1"></div>
-            <button class="btn-primary" onclick="window.doTransfer()">Передать</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Circle Preview -->
-    <div id="circle-preview" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <video id="circle-video-preview" muted style="width:200px;height:200px;border-radius:50%;object-fit:cover;border:4px solid #c084fc"></video>
-            <p style="color:#ef4444;margin:15px 0">Запись...</p>
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="window.cancelCircle()">Отмена</button>
-                <button class="btn-primary" onclick="window.stopCircleRecord()">Отправить</button>
-            </div>
+            <div class="admin-stats" id="admin-stats" style="display:none"><div id="stats-content"></div></div>
         </div>
     </div>
 
@@ -446,7 +307,7 @@
     <div id="premium-modal" class="modal" style="display:none">
         <div class="premium-panel glass">
             <div class="settings-header">
-                <button onclick="window.closeModal()">X</button>
+                <button onclick="window.closeModal()">✕</button>
                 <span>Velora Premium</span>
             </div>
             <div class="premium-hero">
@@ -460,116 +321,117 @@
             </div>
             <div class="premium-features-list" id="premium-features-list"></div>
             <button class="btn-premium" onclick="window.buyPremium()">Купить Premium</button>
-            <p class="premium-note">Отмена в любое время</p>
         </div>
     </div>
 
     <!-- Payment Modal -->
     <div id="payment-modal" class="modal" style="display:none">
-        <div class="modal-content glass" style="max-width:400px">
-            <h2 style="text-align:center;margin-bottom:20px">💳 Оплата Premium</h2>
-            
+        <div class="modal-content glass">
+            <h2>💳 Оплата Premium</h2>
             <div class="payment-info">
-                <div class="payment-price">
-                    <span style="font-size:32px;font-weight:bold">159 ₽</span>
-                    <span style="color:rgba(255,255,255,0.5)">/месяц</span>
+                <div class="payment-price"><span style="font-size:28px;font-weight:bold">159 ₽</span></div>
+                <div class="payment-card" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:15px;border-radius:12px;margin:15px 0">
+                    <div style="color:rgba(255,255,255,0.7);font-size:11px">Номер карты:</div>
+                    <div style="font-size:18px;font-weight:bold;letter-spacing:1px" id="card-number">2200 7012 3007 8476</div>
+                    <button onclick="window.copyCardNumber()" style="margin-top:8px;padding:6px 12px;background:rgba(255,255,255,0.2);border:none;border-radius:6px;color:white">📋 Скопировать</button>
                 </div>
-                
-                <div class="payment-card" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:12px;margin:20px 0">
-                    <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:5px">Номер карты для перевода:</div>
-                    <div style="font-size:20px;font-weight:bold;letter-spacing:2px;font-family:monospace" id="card-number">2200 7012 3007 8476</div>
-                    <button onclick="window.copyCardNumber()" style="margin-top:10px;padding:8px 16px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;color:white;cursor:pointer">📋 Скопировать</button>
-                </div>
-                
-                <div class="payment-steps" style="text-align:left;background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;margin-bottom:20px">
-                    <div style="margin-bottom:10px;color:rgba(255,255,255,0.8)"><b>Как оплатить:</b></div>
-                    <div style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.6">
-                        1. Переведите <b>159 ₽</b> на карту выше<br>
-                        2. В комментарии укажите ваш <b>@username</b><br>
-                        3. Нажмите "Я оплатил" ниже<br>
-                        4. Ожидайте подтверждения (до 24ч)
-                    </div>
+                <div style="text-align:left;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">
+                    1. Переведите 159₽ на карту<br>
+                    2. В комментарии укажите @username<br>
+                    3. Нажмите "Я оплатил"
                 </div>
             </div>
-            
-            <button class="btn-primary" onclick="window.confirmPayment()" style="width:100%;padding:15px;font-size:16px">✓ Я оплатил</button>
-            <button class="btn-secondary" onclick="window.closeModal()" style="width:100%;margin-top:10px">Отмена</button>
+            <button class="btn-primary" onclick="window.confirmPayment()">✓ Я оплатил</button>
+            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
         </div>
     </div>
 
     <!-- Media Viewer -->
     <div id="media-viewer" class="modal" style="display:none">
-        <div onclick="window.closeModal()" style="cursor:pointer"><div id="media-content"></div></div>
+        <div onclick="window.closeModal()"><div id="media-content"></div></div>
     </div>
 
-    <!-- Support Modal (for login screen) -->
+    <!-- Support Modal -->
     <div id="support-modal" class="modal" style="display:none">
         <div class="modal-content glass">
-            <h2>Поддержка Velora</h2>
-            <p style="color:rgba(255,255,255,0.6);margin-bottom:15px">Опишите вашу проблему и мы поможем</p>
-            <div class="input-group"><input type="email" id="support-email" placeholder="Ваш email для ответа"></div>
-            <div class="input-group"><textarea id="support-text" placeholder="Опишите проблему..." rows="4" style="resize:none"></textarea></div>
+            <h2>Поддержка</h2>
+            <div class="input-group"><input type="email" id="support-email" placeholder="Ваш email"></div>
+            <div class="input-group"><textarea id="support-text" placeholder="Опишите проблему..." rows="3"></textarea></div>
             <button class="btn-primary" onclick="window.sendSupportFromLogin()">Отправить</button>
             <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
         </div>
     </div>
 
-    <!-- Support Chat Modal (for regular users) -->
+    <!-- Support Chat -->
     <div id="support-chat-modal" class="modal" style="display:none">
         <div class="support-chat-panel glass">
             <div class="settings-header">
-                <button onclick="window.closeModal()">X</button>
-                <span>Поддержка Velora</span>
+                <button onclick="window.closeModal()">✕</button>
+                <span>Поддержка</span>
             </div>
             <div class="support-messages" id="support-messages"></div>
             <div class="support-input-area">
-                <input type="text" id="support-message-input" placeholder="Написать в поддержку..." onkeypress="if(event.key==='Enter')window.sendToSupport()">
-                <button onclick="window.sendToSupport()">Отправить</button>
+                <input type="text" id="support-message-input" placeholder="Сообщение...">
+                <button onclick="window.sendToSupport()">➤</button>
             </div>
         </div>
     </div>
 
-    <!-- Support Inbox Modal (for admins @cold, @maloy) -->
+    <!-- Support Inbox (admins) -->
     <div id="support-inbox-modal" class="modal" style="display:none">
         <div class="support-inbox-panel glass">
             <div class="settings-header">
-                <button onclick="window.closeModal()">X</button>
-                <span>Входящие обращения</span>
+                <button onclick="window.closeModal()">✕</button>
+                <span>Обращения</span>
             </div>
             <div class="inbox-list" id="inbox-list"></div>
         </div>
     </div>
 
-    <!-- Support Conversation Modal (for admins to reply) -->
+    <!-- Support Conversation -->
     <div id="support-conversation-modal" class="modal" style="display:none">
         <div class="support-chat-panel glass">
             <div class="settings-header">
                 <button onclick="window.backToInbox()">←</button>
                 <span id="conversation-title">Обращение</span>
             </div>
-            <div class="conversation-info" id="conversation-info"></div>
             <div class="support-messages" id="conversation-messages"></div>
             <div class="support-input-area">
-                <input type="text" id="reply-input" placeholder="Ответить..." onkeypress="if(event.key==='Enter')window.sendReply()">
-                <button onclick="window.sendReply()">Отправить</button>
+                <input type="text" id="admin-reply-input" placeholder="Ответ...">
+                <button onclick="window.sendAdminReply()">➤</button>
             </div>
         </div>
     </div>
 
-    <!-- Update Available Modal -->
-    <div id="update-modal" class="modal" style="display:none">
+    <!-- Circle Preview -->
+    <div id="circle-preview" class="modal" style="display:none">
         <div class="modal-content glass">
-            <h2>Доступно обновление!</h2>
-            <p id="update-version" style="color:#22c55e;margin:15px 0">Версия 1.0.1</p>
-            <p style="color:rgba(255,255,255,0.6)">Рекомендуем обновить для лучшей работы</p>
-            <button class="btn-primary" onclick="window.downloadUpdate()">Скачать обновление</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Позже</button>
+            <video id="circle-video-preview" muted style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid #c084fc"></video>
+            <p style="color:#ef4444;margin:10px 0">Запись...</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="window.cancelCircle()">Отмена</button>
+                <button class="btn-primary" onclick="window.stopCircleRecord()">Отправить</button>
+            </div>
         </div>
     </div>
 
-    <input type="file" id="file-input" style="display:none">
-    <input type="file" id="avatar-input" style="display:none" accept="image/*" onchange="window.handleAvatarPick(event)">
-    <input type="file" id="chat-avatar-input" style="display:none" accept="image/*" onchange="window.handleChatAvatarPick(event)">
+    <!-- Transfer Crystals -->
+    <div id="transfer-modal" class="modal" style="display:none">
+        <div class="modal-content glass">
+            <h2>Передать кристаллы</h2>
+            <p>Баланс: <b id="transfer-balance">0</b> 💎</p>
+            <div class="input-group"><input type="text" id="transfer-to" placeholder="@username"></div>
+            <div class="input-group"><input type="number" id="transfer-amount" placeholder="Количество" min="1"></div>
+            <button class="btn-primary" onclick="window.doTransfer()">Передать</button>
+            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+        </div>
+    </div>
+
+    <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="window.handleAvatarPick(event)">
+    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="window.handlePhotoPick(event)">
+    <input type="file" id="video-input" accept="video/*" style="display:none" onchange="window.handleVideoPick(event)">
+    <input type="file" id="file-input" style="display:none" onchange="window.handleFilePick(event)">
+
     <script src="app.js"></script>
 </body>
 </html>
