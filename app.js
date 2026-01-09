@@ -83,10 +83,29 @@ document.addEventListener('DOMContentLoaded', () => {
 function tryAutoLogin() {
     const token = localStorage.getItem('velora_session_token');
     const username = localStorage.getItem('velora_username');
-    if (token && username) {
-        showError('Автовход...');
-        connectToServer(() => send({ type: 'auto_login', token, username }), handleMessage, () => showError(''));
-    }
+    const savedPassword = localStorage.getItem('velora_password');
+    
+    if (!username) return;
+    
+    showError('Автовход...');
+    connectToServer(
+        () => {
+            if (token) {
+                send({ type: 'auto_login', token, username });
+            } else if (savedPassword) {
+                send({ type: 'login', username, password: savedPassword });
+            } else {
+                showError('');
+            }
+        },
+        (msg) => {
+            handleMessage(msg);
+            if (msg.type === 'auto_login_response' && !msg.success && savedPassword) {
+                send({ type: 'login', username, password: savedPassword });
+            }
+        },
+        () => showError('')
+    );
 }
 
 function loadSettings() {
@@ -181,6 +200,11 @@ function submitAuth() {
         const p2 = document.getElementById('password2')?.value;
         if (p2 !== password) { showError('Пароли не совпадают'); return; }
     }
+    
+    // Save credentials for auto-login
+    localStorage.setItem('velora_username', username);
+    localStorage.setItem('velora_password', password);
+    
     showError('Подключение...');
     disconnectFromServer();
     connectToServer(() => {
@@ -920,6 +944,7 @@ window.logout = () => {
     currentUser = null; myChats = []; privateChats = {}; chatMessages = {};
     localStorage.removeItem('velora_session_token');
     localStorage.removeItem('velora_username');
+    localStorage.removeItem('velora_password');
     window.closeModal();
     showScreen('auth');
 };
