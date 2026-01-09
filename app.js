@@ -1,5 +1,6 @@
 // Velora Android App
-const SERVER_URL = 'wss://velora-server-bxcg.onrender.com';
+const SERVER_URL = const SERVER_URL = 'wss://vdffd-production.up.railway.app';
+
 
 let socket = null;
 let currentUser = null;
@@ -845,3 +846,4 @@ function esc(s) {
 
 // Start
 connect();
+
