@@ -169,10 +169,15 @@ window.switchTab = (tab) => {
 };
 
 function submitAuth() {
-    const username = document.getElementById('username')?.value.trim().toLowerCase();
+    const username = document.getElementById('username')?.value.trim().toLowerCase().replace('@', '');
     const password = document.getElementById('password')?.value;
     if (!username || !password) { showError('Заполните все поля'); return; }
+    
+    // Username validation for registration
     if (!isLoginMode) {
+        if (username.length < 3) { showError('Username минимум 3 символа'); return; }
+        if (username.length > 15) { showError('Username максимум 15 символов'); return; }
+        if (!/^[a-z0-9_]+$/.test(username)) { showError('Только английские буквы, цифры и _'); return; }
         const p2 = document.getElementById('password2')?.value;
         if (p2 !== password) { showError('Пароли не совпадают'); return; }
     }
@@ -212,12 +217,20 @@ function playSound() {
     if (!soundEnabled) return;
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-        osc.start(); osc.stop(ctx.currentTime + 0.2);
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc1.connect(gain); osc2.connect(gain);
+        gain.connect(ctx.destination);
+        osc1.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc1.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+        osc2.frequency.setValueAtTime(392, ctx.currentTime);
+        osc2.frequency.setValueAtTime(523.25, ctx.currentTime + 0.1);
+        osc1.type = 'sine'; osc2.type = 'sine';
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc1.start(); osc2.start();
+        osc1.stop(ctx.currentTime + 0.3); osc2.stop(ctx.currentTime + 0.3);
     } catch(e) {}
 }
 function showScreen(name) {
@@ -338,6 +351,10 @@ function handleMessage(msg) {
     else if (msg.type === 'my_aliases') { renderMyAliases(msg.aliases || [], msg.nft_uses || 0, msg.available || 0); }
     else if (msg.type === 'support_messages') { supportMessages = msg.messages || []; renderSupportMessages(); }
     else if (msg.type === 'support_tickets') { supportTickets = msg.tickets || []; renderSupportInbox(); }
+    else if (msg.type === 'update_available') {
+        // Show update modal for Android
+        showUpdateModal(msg.version, msg.url);
+    }
     else if (msg.type === 'ticket_messages') { renderConversationMessages(msg.messages || []); }
     else if (msg.type === 'support_reply_received') {
         supportMessages.push({ from: msg.from, text: msg.text, time: msg.time, is_mine: false });
@@ -490,8 +507,12 @@ function renderMessages() {
             reactHtml = '<div class="reactions">' + Object.entries(m.reactions).map(([e,u]) => 
                 `<span class="reaction" onclick="window.addReaction(${m.id},'${e}')">${e}${u.length}</span>`).join('') + '</div>';
         }
+        // Avatar with image support
+        const avatarColor = m.avatar_color || '#667eea';
+        const avatarContent = m.avatar_data ? `<img src="${m.avatar_data}">` : (m.from||'U')[0].toUpperCase();
+        
         return `<div class="message ${isOwn?'own':''}" id="msg-${m.id}" onclick="window.showMsgMenu(event,${m.id},'${esc(m.from)}','${esc((m.text||'').replace(/'/g,"\\'"))}',${isOwn})">
-            <div class="avatar" style="background:${m.avatar_color||'#667eea'}">${(m.from||'U')[0].toUpperCase()}</div>
+            <div class="avatar" style="background:${avatarColor}">${avatarContent}</div>
             <div class="message-content"><div class="message-author">${esc(m.from)}${creator}</div>
             ${fwdHtml}${replyHtml}${content}${reactHtml}<div class="message-time">${time}</div></div></div>`;
     }).join('');
@@ -664,25 +685,42 @@ window.showAttachMenu = () => {
     m.style.display = m.style.display === 'none' ? 'flex' : 'none';
 };
 
-window.attachPhoto = () => pickFile('image/*', 'image');
-window.attachVideo = () => pickFile('video/*', 'video');
-window.attachFile = () => pickFile('*/*', 'file');
+window.attachPhoto = () => document.getElementById('photo-input')?.click();
+window.attachVideo = () => document.getElementById('video-input')?.click();
+window.attachFile = () => document.getElementById('file-input')?.click();
 
-function pickFile(accept, type) {
-    const inp = document.getElementById('file-input');
-    inp.accept = accept;
-    inp.onchange = e => {
-        const f = e.target.files[0];
-        if (!f) return;
-        const maxSize = currentUser?.premium ? 4*1024*1024*1024 : 50*1024*1024;
-        if (f.size > maxSize) { showToast(currentUser?.premium ? 'Макс 4GB' : 'Макс 50MB'); return; }
-        const r = new FileReader();
-        r.onload = ev => sendMedia(type, ev.target.result, f.name);
-        r.readAsDataURL(f);
-    };
-    inp.click();
+window.handlePhotoPick = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const maxSize = currentUser?.premium ? 100*1024*1024 : 10*1024*1024;
+    if (f.size > maxSize) { showToast(currentUser?.premium ? 'Макс 100MB' : 'Макс 10MB'); return; }
+    const r = new FileReader();
+    r.onload = ev => sendMedia('image', ev.target.result, f.name);
+    r.readAsDataURL(f);
     hideEl('attach-menu');
-}
+};
+
+window.handleVideoPick = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const maxSize = currentUser?.premium ? 500*1024*1024 : 50*1024*1024;
+    if (f.size > maxSize) { showToast(currentUser?.premium ? 'Макс 500MB' : 'Макс 50MB'); return; }
+    const r = new FileReader();
+    r.onload = ev => sendMedia('video', ev.target.result, f.name);
+    r.readAsDataURL(f);
+    hideEl('attach-menu');
+};
+
+window.handleFilePick = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const maxSize = currentUser?.premium ? 500*1024*1024 : 25*1024*1024;
+    if (f.size > maxSize) { showToast(currentUser?.premium ? 'Макс 500MB' : 'Макс 25MB'); return; }
+    const r = new FileReader();
+    r.onload = ev => sendMedia('file', ev.target.result, f.name);
+    r.readAsDataURL(f);
+    hideEl('attach-menu');
+};
 
 // Profile
 function updateProfile() {
@@ -1149,3 +1187,28 @@ function renderMyAliases(aliases, nftUses, available) {
         }
     }
 }
+
+
+// ===== UPDATE SYSTEM FOR ANDROID =====
+let pendingUpdateUrl = null;
+
+function showUpdateModal(version, url) {
+    pendingUpdateUrl = url;
+    document.getElementById('update-version-text').textContent = 'Версия ' + version;
+    showEl('update-modal');
+    playSound();
+}
+
+window.downloadUpdate = () => {
+    if (pendingUpdateUrl) {
+        // Open URL in browser to download APK
+        window.open(pendingUpdateUrl, '_blank');
+        showToast('Скачивание началось...');
+    }
+    window.closeModal();
+};
+
+window.skipUpdate = () => {
+    window.closeModal();
+    showToast('Обновление отложено');
+};
