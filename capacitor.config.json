@@ -1,0 +1,16 @@
+{
+  "appId": "com.velora.app",
+  "appName": "Velora",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0f0f1a",
+      "showSpinner": false
+    }
+  }
+}
