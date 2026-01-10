@@ -7,74 +7,116 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app mobile">
-        <div class="titlebar mobile-titlebar">
-            <span class="logo">VELORA</span>
-        </div>
-
-        <div id="auth-screen" class="screen" style="display:flex">
-            <div class="auth-panel glass">
-                <h1>Velora</h1>
-                <p class="subtitle">Мессенджер нового поколения</p>
-                <div class="tabs">
-                    <button class="tab active" onclick="window.switchTab('login')">Вход</button>
-                    <button class="tab" onclick="window.switchTab('register')">Регистрация</button>
+    <div class="app">
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen active">
+            <div class="auth-container">
+                <div class="auth-logo">
+                    <div class="logo-icon">V</div>
+                    <h1>Velora</h1>
+                    <p>Общайся красиво</p>
                 </div>
-                <form id="auth-form">
-                    <div class="input-group"><input type="text" id="username" placeholder="Имя пользователя"></div>
-                    <div class="input-group"><input type="password" id="password" placeholder="Пароль"></div>
-                    <div id="register-fields" style="display:none">
-                        <div class="input-group"><input type="password" id="password2" placeholder="Повторите пароль"></div>
-                        <div class="input-group"><input type="text" id="displayname" placeholder="Отображаемое имя"></div>
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" onclick="window.switchTab('login')">Вход</button>
+                        <button class="auth-tab" onclick="window.switchTab('register')">Регистрация</button>
                     </div>
-                    <div class="error" id="auth-error"></div>
-                    <button type="submit" class="btn-primary" id="auth-btn">Войти</button>
-                </form>
-                <button class="btn-support" onclick="window.showSupportModal()">Поддержка</button>
+                    <form id="auth-form">
+                        <div class="input-field">
+                            <input type="text" id="username" placeholder=" " required>
+                            <label>Имя пользователя</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" id="password" placeholder=" " required>
+                            <label>Пароль</label>
+                        </div>
+                        <div id="register-fields" style="display:none">
+                            <div class="input-field">
+                                <input type="password" id="password2" placeholder=" ">
+                                <label>Повторите пароль</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" id="displayname" placeholder=" ">
+                                <label>Отображаемое имя</label>
+                            </div>
+                            <div class="color-picker">
+                                <span>Цвет профиля:</span>
+                                <div class="colors" id="accent-colors"></div>
+                            </div>
+                        </div>
+                        <div class="auth-error" id="auth-error"></div>
+                        <button type="submit" class="btn-auth" id="auth-btn">Войти</button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <div id="chat-screen" class="screen" style="display:none">
-            <div class="chat-layout mobile-layout">
-                <div class="sidebar glass mobile-sidebar" id="sidebar">
+        <!-- Chat Screen -->
+        <div id="chat-screen" class="screen">
+            <div class="chat-layout">
+                <!-- Sidebar -->
+                <div class="sidebar" id="sidebar">
                     <div class="sidebar-header">
-                        <button class="btn-menu" onclick="window.showMainSettings()">☰</button>
-                        <div class="search-box">
-                            <input type="text" id="search-input" placeholder="Поиск @username..." oninput="window.doSearch()">
-                        </div>
+                        <button class="btn-icon" onclick="window.showMainSettings()">
+                            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                        </button>
+                        <h2>Чаты</h2>
+                        <button class="btn-icon" onclick="window.showCreateOptions()">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
                     </div>
-                    <div class="sidebar-actions">
-                        <button onclick="window.showCreateGroup()">Группа</button>
-                        <button onclick="window.showCreateChannel()">Канал</button>
-                        <button onclick="window.showJoinChat()">По ссылке</button>
+                    <div class="search-container">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="search-input" placeholder="Поиск..." oninput="window.doSearch()">
                     </div>
-                    <div class="section-title">ЧАТЫ</div>
                     <div class="chats-list" id="chats-list"></div>
                     <div class="search-results" id="search-results" style="display:none"></div>
                 </div>
-                
-                <div class="chat-panel glass mobile-chat" id="chat-panel" style="display:none">
-                    <div id="empty-chat" class="empty-chat"><div class="empty-text">Выберите чат</div></div>
-                    <div id="chat-content" style="display:none;flex-direction:column;height:100%">
+
+                <!-- Chat Panel -->
+                <div class="chat-panel" id="chat-panel">
+                    <div id="empty-chat" class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <h3>Выберите чат</h3>
+                        <p>или начните новый разговор</p>
+                    </div>
+                    <div id="chat-content" style="display:none">
                         <div class="chat-header">
-                            <button class="btn-back" onclick="window.backToChats()">←</button>
-                            <div class="chat-icon" id="chat-avatar"></div>
+                            <button class="btn-back" onclick="window.backToChats()">
+                                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            </button>
+                            <div class="chat-header-avatar" id="chat-avatar">U</div>
                             <div class="chat-header-info" onclick="window.showChatProfile()">
-                                <div class="chat-header-name" id="chat-title">Чат</div>
-                                <div class="chat-header-status" id="chat-subtitle"></div>
+                                <span class="chat-header-name" id="chat-title">Чат</span>
+                                <span class="chat-header-status" id="chat-subtitle">онлайн</span>
                             </div>
+                            <button class="btn-icon" onclick="window.startCall()">
+                                <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                            </button>
+                            <button class="btn-icon" onclick="window.startVideoCall()">
+                                <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                            </button>
                         </div>
                         <div class="messages" id="messages"></div>
-                        <div class="message-input-area">
-                            <div id="reply-preview" class="reply-preview-input" style="display:none">
-                                <div class="reply-info"><span>Ответ <b id="reply-to-name"></b></span><span id="reply-to-text"></span></div>
+                        <div class="message-input-container">
+                            <div id="reply-preview" class="reply-bar" style="display:none">
+                                <div class="reply-content">
+                                    <span class="reply-name" id="reply-to-name"></span>
+                                    <span class="reply-text" id="reply-to-text"></span>
+                                </div>
                                 <button onclick="window.cancelReply()">✕</button>
                             </div>
-                            <div class="message-input">
-                                <button class="btn-attach" onclick="window.showAttachMenu()">+</button>
+                            <div class="message-input-row">
+                                <button class="btn-attach" onclick="window.showAttachMenu()">
+                                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                </button>
                                 <input type="text" id="message-text" placeholder="Сообщение...">
-                                <button class="btn-voice" id="voice-btn" onclick="window.startVoiceRecord()">🎤</button>
-                                <button class="btn-send" onclick="window.sendMessage()">➤</button>
+                                <button class="btn-voice" id="voice-btn" onclick="window.toggleVoiceRecord()">
+                                    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                                </button>
+                                <button class="btn-send" onclick="window.sendMessage()">
+                                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -83,306 +125,328 @@
         </div>
     </div>
 
-
-    <div id="attach-menu" class="popup-menu" style="display:none">
-        <div class="popup-content glass">
-            <button onclick="window.attachPhoto()">📷 Фото</button>
-            <button onclick="window.attachVideo()">🎬 Видео</button>
-            <button onclick="window.attachFile()">📎 Файл</button>
-            <button onclick="window.startCircleRecord()">⭕ Кружок</button>
+    <!-- Attach Menu -->
+    <div id="attach-menu" class="bottom-sheet" style="display:none">
+        <div class="bottom-sheet-content">
+            <div class="sheet-handle"></div>
+            <div class="attach-grid">
+                <button onclick="window.attachPhoto()"><div class="attach-icon photo">📷</div><span>Фото</span></button>
+                <button onclick="window.attachVideo()"><div class="attach-icon video">🎬</div><span>Видео</span></button>
+                <button onclick="window.attachFile()"><div class="attach-icon file">📎</div><span>Файл</span></button>
+                <button onclick="window.startCircleRecord()"><div class="attach-icon circle">⭕</div><span>Кружок</span></button>
+            </div>
         </div>
     </div>
 
-    <div id="message-menu" class="context-menu glass" style="display:none">
-        <button onclick="window.menuReply()">↩ Ответить</button>
-        <button onclick="window.menuForward()">↗ Переслать</button>
-        <div class="reaction-row">
-            <button onclick="window.menuReaction('👍')">👍</button>
-            <button onclick="window.menuReaction('❤️')">❤️</button>
-            <button onclick="window.menuReaction('😂')">😂</button>
-            <button onclick="window.menuReaction('😮')">😮</button>
-            <button onclick="window.menuReaction('😢')">😢</button>
-            <button onclick="window.menuReaction('🔥')">🔥</button>
+    <!-- Create Options -->
+    <div id="create-options" class="bottom-sheet" style="display:none">
+        <div class="bottom-sheet-content">
+            <div class="sheet-handle"></div>
+            <div class="sheet-list">
+                <button onclick="window.showCreateGroup()"><span class="list-icon">👥</span>Создать группу</button>
+                <button onclick="window.showCreateChannel()"><span class="list-icon">📢</span>Создать канал</button>
+                <button onclick="window.showJoinChat()"><span class="list-icon">🔗</span>Войти по ссылке</button>
+            </div>
         </div>
-        <button id="menu-delete" class="danger" onclick="window.menuDelete()">🗑 Удалить</button>
+    </div>
+
+    <!-- Message Context Menu -->
+    <div id="message-menu" class="bottom-sheet" style="display:none">
+        <div class="bottom-sheet-content">
+            <div class="sheet-handle"></div>
+            <div class="reaction-picker">
+                <button onclick="window.menuReaction('👍')">👍</button>
+                <button onclick="window.menuReaction('❤️')">❤️</button>
+                <button onclick="window.menuReaction('😂')">😂</button>
+                <button onclick="window.menuReaction('😮')">😮</button>
+                <button onclick="window.menuReaction('😢')">😢</button>
+                <button onclick="window.menuReaction('🔥')">🔥</button>
+            </div>
+            <div class="sheet-list">
+                <button onclick="window.menuReply()"><span class="list-icon">↩️</span>Ответить</button>
+                <button onclick="window.menuForward()"><span class="list-icon">↗️</span>Переслать</button>
+                <button onclick="window.menuCopy()"><span class="list-icon">📋</span>Копировать</button>
+                <button id="menu-delete" onclick="window.menuDelete()" class="danger"><span class="list-icon">🗑</span>Удалить</button>
+            </div>
+        </div>
     </div>
 
     <!-- User Profile Modal -->
     <div id="user-profile-modal" class="modal" style="display:none">
-        <div class="profile-view glass">
-            <div class="profile-header"><button onclick="window.closeModal()">✕</button></div>
-            <div class="profile-avatar-section">
-                <div class="avatar xlarge" id="profile-avatar">U</div>
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="profile-modal">
+            <div class="profile-cover"></div>
+            <button class="modal-close" onclick="window.closeModal()">✕</button>
+            <div class="profile-main">
+                <div class="profile-avatar-large" id="profile-avatar">U</div>
                 <div class="profile-badges" id="profile-badges"></div>
+                <h2 id="profile-name">User</h2>
+                <p class="profile-username" id="profile-username">@user</p>
+                <p class="profile-bio" id="profile-bio"></p>
+                
+                <div class="profile-actions-row">
+                    <button class="profile-action" onclick="window.openPrivateChatFromProfile()">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                        <span>Написать</span>
+                    </button>
+                    <button class="profile-action" onclick="window.startCallToUser()">
+                        <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                        <span>Звонок</span>
+                    </button>
+                    <button class="profile-action" onclick="window.startVideoCallToUser()">
+                        <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                        <span>Видео</span>
+                    </button>
+                    <button class="profile-action" onclick="window.sendGift()">
+                        <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
+                        <span>Подарок</span>
+                    </button>
+                </div>
+
+                <div class="profile-gifts-section" id="profile-gifts-section" style="display:none">
+                    <h4>Полученные подарки</h4>
+                    <div class="gifts-showcase" id="profile-gifts-list"></div>
+                </div>
             </div>
-            <div class="profile-name" id="profile-name">User</div>
-            <div class="profile-username" id="profile-username">@user</div>
-            <div class="profile-bio" id="profile-bio"></div>
-            <div class="profile-actions">
-                <button class="btn-primary" onclick="window.openPrivateChatFromProfile()">Написать</button>
-                <button class="btn-secondary" onclick="window.sendGift()">Подарок</button>
-            </div>
         </div>
     </div>
 
-    <!-- Chat Profile Modal -->
-    <div id="chat-profile-modal" class="modal" style="display:none">
-        <div class="profile-view glass">
-            <div class="profile-header"><button onclick="window.closeModal()">✕</button><span id="chat-profile-type">Группа</span></div>
-            <div class="profile-avatar-section"><div class="chat-icon xlarge" id="chat-profile-avatar">G</div></div>
-            <div class="profile-name" id="chat-profile-name">Чат</div>
-            <div class="profile-bio" id="chat-profile-desc"></div>
-            <div class="profile-info">
-                <div class="info-row"><span>Ссылка</span><span id="chat-profile-link"></span></div>
-                <div class="info-row"><span>Участников</span><span id="chat-profile-members">0</span></div>
-            </div>
-            <div class="profile-actions">
-                <button class="btn-secondary" onclick="window.copyLink()">Копировать ссылку</button>
-                <button class="btn-danger" onclick="window.leaveChat()">Покинуть</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gift Modal -->
-    <div id="gift-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Подарки</h2>
-            <div class="gifts-grid" id="gifts-grid"></div>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Forward Modal -->
-    <div id="forward-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Переслать</h2>
-            <div class="forward-preview-box"><p id="forward-preview"></p></div>
-            <div class="forward-list" id="forward-list"></div>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Create Group -->
-    <div id="create-group-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Создать группу</h2>
-            <div class="input-group"><input type="text" id="group-name" placeholder="Название"></div>
-            <div class="input-group"><input type="text" id="group-desc" placeholder="Описание"></div>
-            <label><input type="checkbox" id="group-public"> Публичная</label>
-            <button class="btn-primary" onclick="window.createGroup()">Создать</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Create Channel -->
-    <div id="create-channel-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Создать канал</h2>
-            <div class="input-group"><input type="text" id="channel-name" placeholder="Название"></div>
-            <div class="input-group"><input type="text" id="channel-desc" placeholder="Описание"></div>
-            <label><input type="checkbox" id="channel-public"> Публичный</label>
-            <button class="btn-primary" onclick="window.createChannel()">Создать</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Join Chat -->
-    <div id="join-chat-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Войти по ссылке</h2>
-            <div class="input-group"><input type="text" id="join-link" placeholder="Ссылка"></div>
-            <button class="btn-primary" onclick="window.joinChat()">Войти</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-
-    <!-- Main Settings -->
+    <!-- Settings Modal -->
     <div id="main-settings" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="settings-modal">
+            <div class="settings-header-bar">
                 <button onclick="window.closeModal()">✕</button>
                 <span>Настройки</span>
+                <div></div>
             </div>
-            <div class="profile-section" onclick="window.showMyProfile()">
-                <div class="avatar large" id="settings-avatar">U</div>
-                <div>
-                    <div class="settings-name" id="settings-name">User</div>
-                    <div class="settings-sub" id="settings-username">@user</div>
+            <div class="settings-profile" onclick="window.showMyProfile()">
+                <div class="settings-avatar" id="settings-avatar">U</div>
+                <div class="settings-info">
+                    <span class="settings-name" id="settings-name">User</span>
+                    <span class="settings-username" id="settings-username">@user</span>
                 </div>
+                <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             </div>
-            <div class="crystals-display">
-                <span class="crystals-icon">💎</span>
-                <div class="crystals-info">
-                    <div class="crystals-amount" id="my-crystals">0</div>
-                    <div class="crystals-label">кристаллов</div>
+            <div class="crystals-card">
+                <div class="crystals-left">
+                    <span class="crystals-icon">💎</span>
+                    <div>
+                        <span class="crystals-amount" id="my-crystals">0</span>
+                        <span class="crystals-label">кристаллов</span>
+                    </div>
                 </div>
+                <button class="btn-transfer" onclick="window.showTransferModal()">Передать</button>
             </div>
-            <div class="settings-menu">
-                <button onclick="window.showMyProfile()">Мой профиль</button>
-                <button id="support-btn" onclick="window.showSupportChat()">Поддержка</button>
-                <button id="inbox-btn" style="display:none" onclick="window.showSupportInbox()">Входящие обращения</button>
-                <button onclick="window.showPremiumModal()" class="premium-btn">⭐ Premium</button>
-                <button onclick="window.showAppearanceSettings()">Оформление</button>
-                <button id="admin-btn" style="display:none" onclick="window.showAdminPanel()">Админ-панель</button>
-                <button class="danger" onclick="window.logout()">Выйти</button>
+            <div class="settings-list">
+                <button onclick="window.showPremiumModal()"><span class="setting-icon premium">⭐</span>Velora Premium</button>
+                <button onclick="window.showAppearanceSettings()"><span class="setting-icon">🎨</span>Оформление</button>
+                <button id="support-btn" onclick="window.showSupportChat()"><span class="setting-icon">💬</span>Поддержка</button>
+                <button id="inbox-btn" style="display:none" onclick="window.showSupportInbox()"><span class="setting-icon">📥</span>Входящие обращения</button>
+                <button id="admin-btn" style="display:none" onclick="window.showAdminPanel()"><span class="setting-icon">⚙️</span>Админ-панель</button>
+                <button onclick="window.logout()" class="danger"><span class="setting-icon">🚪</span>Выйти</button>
             </div>
         </div>
     </div>
 
     <!-- My Profile Edit -->
     <div id="my-profile-modal" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="settings-modal">
+            <div class="settings-header-bar">
                 <button onclick="window.backToSettings()">←</button>
                 <span>Мой профиль</span>
-                <button onclick="window.saveProfile()">✓</button>
+                <button onclick="window.saveProfile()" class="save-btn">✓</button>
             </div>
-            <div class="avatar-edit" onclick="window.pickAvatar()">
-                <div class="avatar xlarge" id="edit-avatar">U</div>
+            <div class="profile-edit-avatar" onclick="window.pickAvatar()">
+                <div class="edit-avatar" id="edit-avatar">U</div>
+                <div class="edit-avatar-overlay">📷</div>
             </div>
-            <div class="form-section"><label>Имя</label><input type="text" id="edit-name"></div>
-            <div class="form-section"><label>О себе</label><textarea id="edit-bio"></textarea></div>
-            <div class="my-aliases-section">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="edit-name">
+            </div>
+            <div class="form-group">
+                <label>О себе</label>
+                <textarea id="edit-bio" rows="3"></textarea>
+            </div>
+            <div class="aliases-section">
                 <label>Дополнительные @username <span id="aliases-count">(0/0)</span></label>
-                <div class="my-aliases" id="my-aliases-list"></div>
-                <div class="add-alias-row" id="add-alias-row" style="display:none">
-                    <input type="text" id="new-alias-input" placeholder="Новый @username">
+                <div id="my-aliases-list"></div>
+                <div id="add-alias-row" class="add-alias" style="display:none">
+                    <input type="text" id="new-alias-input" placeholder="новый_username">
                     <button onclick="window.addAlias()">+</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Appearance Settings -->
-    <div id="appearance-settings" class="modal" style="display:none">
-        <div class="settings-panel glass">
-            <div class="settings-header">
-                <button onclick="window.backToSettings()">←</button>
-                <span>Оформление</span>
+    <!-- Create Group -->
+    <div id="create-group-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="form-modal">
+            <div class="form-modal-header">
+                <button onclick="window.closeModal()">✕</button>
+                <span>Новая группа</span>
+                <button onclick="window.createGroup()" class="save-btn">✓</button>
             </div>
-            <div class="form-section">
-                <label>Тема</label>
-                <div class="theme-options">
-                    <button class="theme-btn active" onclick="window.setTheme('dark')">Тёмная</button>
-                    <button class="theme-btn" onclick="window.setTheme('light')">Светлая</button>
-                </div>
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" id="group-name" placeholder="Введите название">
             </div>
-            <div class="form-section">
-                <label>Цвет акцента</label>
-                <div class="colors" id="accent-colors"></div>
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea id="group-desc" placeholder="О чём эта группа?"></textarea>
+            </div>
+            <label class="checkbox-label">
+                <input type="checkbox" id="group-public">
+                <span class="checkmark"></span>
+                Публичная группа
+            </label>
+        </div>
+    </div>
+
+    <!-- Create Channel -->
+    <div id="create-channel-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="form-modal">
+            <div class="form-modal-header">
+                <button onclick="window.closeModal()">✕</button>
+                <span>Новый канал</span>
+                <button onclick="window.createChannel()" class="save-btn">✓</button>
+            </div>
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" id="channel-name" placeholder="Введите название">
+            </div>
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea id="channel-desc" placeholder="О чём этот канал?"></textarea>
+            </div>
+            <label class="checkbox-label">
+                <input type="checkbox" id="channel-public">
+                <span class="checkmark"></span>
+                Публичный канал
+            </label>
+        </div>
+    </div>
+
+    <!-- Join Chat -->
+    <div id="join-chat-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="form-modal compact">
+            <h3>Войти по ссылке</h3>
+            <div class="form-group">
+                <input type="text" id="join-link" placeholder="Вставьте ссылку">
+            </div>
+            <div class="form-buttons">
+                <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+                <button class="btn-primary" onclick="window.joinChat()">Войти</button>
             </div>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel" class="modal" style="display:none">
-        <div class="admin-panel glass">
-            <div class="settings-header">
+    <!-- Gift Modal -->
+    <div id="gift-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="gift-modal">
+            <div class="gift-modal-header">
+                <h3>Отправить подарок</h3>
                 <button onclick="window.closeModal()">✕</button>
-                <span>Админ-панель</span>
             </div>
-            <div class="admin-content" id="admin-content">
-                <div class="admin-section">
-                    <div class="input-group"><input type="text" id="admin-username" placeholder="@username"></div>
-                    <div class="input-group"><input type="text" id="admin-value" placeholder="Значение"></div>
-                    <div class="nft-uses-section">
-                        <label style="color:rgba(255,255,255,0.5);font-size:12px">NFT Uses</label>
-                        <div class="nft-count-select">
-                            <button class="nft-count-btn" onclick="window.setNftCount(1)">1</button>
-                            <button class="nft-count-btn" onclick="window.setNftCount(2)">2</button>
-                            <button class="nft-count-btn" onclick="window.setNftCount(3)">3</button>
-                        </div>
-                        <div id="nft-aliases-inputs" style="display:none;margin-top:10px"></div>
-                        <button id="nft-give-btn" class="btn-nft-give" style="display:none" onclick="window.giveNftWithAliases()">Выдать NFT Uses</button>
-                    </div>
-                    <div class="admin-actions" id="admin-actions"></div>
-                </div>
-            </div>
-            <div class="admin-stats" id="admin-stats" style="display:none"><div id="stats-content"></div></div>
+            <div class="gifts-grid" id="gifts-grid"></div>
+        </div>
+    </div>
+
+    <!-- Forward Modal -->
+    <div id="forward-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="form-modal">
+            <h3>Переслать сообщение</h3>
+            <div class="forward-preview" id="forward-preview"></div>
+            <div class="forward-list" id="forward-list"></div>
+            <button class="btn-secondary full" onclick="window.closeModal()">Отмена</button>
         </div>
     </div>
 
     <!-- Premium Modal -->
     <div id="premium-modal" class="modal" style="display:none">
-        <div class="premium-panel glass">
-            <div class="settings-header">
-                <button onclick="window.closeModal()">✕</button>
-                <span>Velora Premium</span>
-            </div>
-            <div class="premium-hero">
-                <div class="premium-star">★</div>
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="premium-modal">
+            <button class="modal-close" onclick="window.closeModal()">✕</button>
+            <div class="premium-header">
+                <div class="premium-star">⭐</div>
                 <h2>Velora Premium</h2>
                 <p>Разблокируй все возможности</p>
             </div>
-            <div class="premium-price">
-                <span class="price-amount">159</span>
-                <span class="price-currency">руб/мес</span>
+            <div class="premium-price-tag">
+                <span class="price">159</span>
+                <span class="currency">₽/мес</span>
             </div>
-            <div class="premium-features-list" id="premium-features-list"></div>
-            <button class="btn-premium" onclick="window.buyPremium()">Купить Premium</button>
+            <div class="premium-features" id="premium-features-list"></div>
+            <button class="btn-premium" onclick="window.buyPremium()">Оформить Premium</button>
         </div>
     </div>
 
     <!-- Payment Modal -->
     <div id="payment-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>💳 Оплата Premium</h2>
-            <div class="payment-info">
-                <div class="payment-price"><span style="font-size:28px;font-weight:bold">159 ₽</span></div>
-                <div class="payment-card" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:15px;border-radius:12px;margin:15px 0">
-                    <div style="color:rgba(255,255,255,0.7);font-size:11px">Номер карты:</div>
-                    <div style="font-size:18px;font-weight:bold;letter-spacing:1px" id="card-number">2200 7012 3007 8476</div>
-                    <button onclick="window.copyCardNumber()" style="margin-top:8px;padding:6px 12px;background:rgba(255,255,255,0.2);border:none;border-radius:6px;color:white">📋 Скопировать</button>
-                </div>
-                <div style="text-align:left;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5">
-                    1. Переведите 159₽ на карту<br>
-                    2. В комментарии укажите @username<br>
-                    3. Нажмите "Я оплатил"
-                </div>
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="payment-modal">
+            <h3>💳 Оплата Premium</h3>
+            <div class="payment-amount">159 ₽</div>
+            <div class="payment-card">
+                <span class="card-label">Номер карты:</span>
+                <span class="card-number" id="card-number">2200 7012 3007 8476</span>
+                <button onclick="window.copyCardNumber()">📋 Скопировать</button>
             </div>
-            <button class="btn-primary" onclick="window.confirmPayment()">✓ Я оплатил</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Media Viewer -->
-    <div id="media-viewer" class="modal" style="display:none">
-        <div onclick="window.closeModal()"><div id="media-content"></div></div>
-    </div>
-
-    <!-- Support Modal -->
-    <div id="support-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Поддержка</h2>
-            <div class="input-group"><input type="email" id="support-email" placeholder="Ваш email"></div>
-            <div class="input-group"><textarea id="support-text" placeholder="Опишите проблему..." rows="3"></textarea></div>
-            <button class="btn-primary" onclick="window.sendSupportFromLogin()">Отправить</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+            <div class="payment-steps">
+                <p>1. Переведите 159₽ на карту</p>
+                <p>2. В комментарии укажите ваш @username</p>
+                <p>3. Нажмите "Я оплатил"</p>
+            </div>
+            <div class="form-buttons">
+                <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+                <button class="btn-primary" onclick="window.confirmPayment()">✓ Я оплатил</button>
+            </div>
         </div>
     </div>
 
     <!-- Support Chat -->
     <div id="support-chat-modal" class="modal" style="display:none">
-        <div class="support-chat-panel glass">
-            <div class="settings-header">
-                <button onclick="window.closeModal()">✕</button>
-                <span>Поддержка</span>
+        <div class="modal-overlay"></div>
+        <div class="support-modal">
+            <div class="support-header">
+                <button onclick="window.closeModal()">←</button>
+                <div class="support-title">
+                    <span>Поддержка Velora</span>
+                    <small>Обычно отвечаем быстро</small>
+                </div>
+                <div class="support-avatar">💬</div>
             </div>
-            <div class="support-messages" id="support-messages"></div>
-            <div class="support-input-area">
-                <input type="text" id="support-message-input" placeholder="Сообщение...">
-                <button onclick="window.sendToSupport()">➤</button>
+            <div class="support-messages" id="support-messages">
+                <div class="support-welcome">
+                    <div class="welcome-icon">👋</div>
+                    <h4>Привет!</h4>
+                    <p>Опишите вашу проблему, и мы постараемся помочь как можно скорее.</p>
+                </div>
+            </div>
+            <div class="support-input">
+                <input type="text" id="support-message-input" placeholder="Напишите сообщение...">
+                <button onclick="window.sendToSupport()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Support Inbox (admins) -->
+    <!-- Support Inbox (Admin) -->
     <div id="support-inbox-modal" class="modal" style="display:none">
-        <div class="support-inbox-panel glass">
-            <div class="settings-header">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="support-modal">
+            <div class="support-header">
                 <button onclick="window.closeModal()">✕</button>
-                <span>Обращения</span>
+                <div class="support-title"><span>Обращения</span></div>
+                <div></div>
             </div>
             <div class="inbox-list" id="inbox-list"></div>
         </div>
@@ -390,59 +454,164 @@
 
     <!-- Support Conversation -->
     <div id="support-conversation-modal" class="modal" style="display:none">
-        <div class="support-chat-panel glass">
-            <div class="settings-header">
+        <div class="modal-overlay"></div>
+        <div class="support-modal">
+            <div class="support-header">
                 <button onclick="window.backToInbox()">←</button>
-                <span id="conversation-title">Обращение</span>
+                <div class="support-title"><span id="conversation-title">Обращение</span></div>
+                <div></div>
             </div>
             <div class="support-messages" id="conversation-messages"></div>
-            <div class="support-input-area">
+            <div class="support-input">
                 <input type="text" id="admin-reply-input" placeholder="Ответ...">
-                <button onclick="window.sendAdminReply()">➤</button>
+                <button onclick="window.sendAdminReply()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Circle Preview -->
-    <div id="circle-preview" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <video id="circle-video-preview" muted style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid #c084fc"></video>
-            <p style="color:#ef4444;margin:10px 0">Запись...</p>
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="window.cancelCircle()">Отмена</button>
-                <button class="btn-primary" onclick="window.stopCircleRecord()">Отправить</button>
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="admin-modal">
+            <div class="admin-header">
+                <button onclick="window.closeModal()">✕</button>
+                <span>Админ-панель</span>
+                <button onclick="window.getAdminStats()">📊</button>
+            </div>
+            <div class="admin-content">
+                <div class="form-group">
+                    <label>Пользователь</label>
+                    <input type="text" id="admin-username" placeholder="@username">
+                </div>
+                <div class="form-group">
+                    <label>Значение / Причина</label>
+                    <input type="text" id="admin-value" placeholder="Количество или причина действия">
+                </div>
+                <div class="admin-section">
+                    <h4>NFT Uses</h4>
+                    <div class="nft-buttons">
+                        <button class="nft-btn" onclick="window.setNftCount(1)">1</button>
+                        <button class="nft-btn" onclick="window.setNftCount(2)">2</button>
+                        <button class="nft-btn" onclick="window.setNftCount(3)">3</button>
+                    </div>
+                    <div id="nft-aliases-inputs"></div>
+                    <button id="nft-give-btn" class="btn-nft" style="display:none" onclick="window.giveNftWithAliases()">Выдать NFT Uses</button>
+                </div>
+                <div class="admin-actions" id="admin-actions"></div>
+            </div>
+            <div id="admin-stats" style="display:none">
+                <div id="stats-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appearance Settings -->
+    <div id="appearance-settings" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="settings-modal compact">
+            <div class="settings-header-bar">
+                <button onclick="window.backToSettings()">←</button>
+                <span>Оформление</span>
+                <div></div>
+            </div>
+            <div class="form-group">
+                <label>Тема</label>
+                <div class="theme-switcher">
+                    <button class="theme-opt active" data-theme="dark" onclick="window.setTheme('dark')">🌙 Тёмная</button>
+                    <button class="theme-opt" data-theme="light" onclick="window.setTheme('light')">☀️ Светлая</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Цвет акцента</label>
+                <div class="colors-grid" id="settings-colors"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Profile -->
+    <div id="chat-profile-modal" class="modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="profile-modal">
+            <div class="profile-cover"></div>
+            <button class="modal-close" onclick="window.closeModal()">✕</button>
+            <div class="profile-main">
+                <div class="profile-avatar-large chat-type" id="chat-profile-avatar">G</div>
+                <h2 id="chat-profile-name">Группа</h2>
+                <p class="profile-type" id="chat-profile-type">Группа</p>
+                <p class="profile-bio" id="chat-profile-desc"></p>
+                <div class="profile-stats">
+                    <div class="stat"><span id="chat-profile-members">0</span><small>участников</small></div>
+                </div>
+                <div class="profile-link-row">
+                    <span id="chat-profile-link"></span>
+                    <button onclick="window.copyLink()">📋</button>
+                </div>
+                <button class="btn-danger full" onclick="window.leaveChat()">Покинуть</button>
             </div>
         </div>
     </div>
 
     <!-- Transfer Crystals -->
     <div id="transfer-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <h2>Передать кристаллы</h2>
-            <p>Баланс: <b id="transfer-balance">0</b> 💎</p>
-            <div class="input-group"><input type="text" id="transfer-to" placeholder="@username"></div>
-            <div class="input-group"><input type="number" id="transfer-amount" placeholder="Количество" min="1"></div>
-            <button class="btn-primary" onclick="window.doTransfer()">Передать</button>
-            <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div class="form-modal compact">
+            <h3>💎 Передать кристаллы</h3>
+            <p class="transfer-balance">Баланс: <b id="transfer-balance">0</b></p>
+            <div class="form-group">
+                <input type="text" id="transfer-to" placeholder="@username получателя">
+            </div>
+            <div class="form-group">
+                <input type="number" id="transfer-amount" placeholder="Количество" min="1">
+            </div>
+            <div class="form-buttons">
+                <button class="btn-secondary" onclick="window.closeModal()">Отмена</button>
+                <button class="btn-primary" onclick="window.doTransfer()">Передать</button>
+            </div>
         </div>
     </div>
 
+    <!-- Media Viewer -->
+    <div id="media-viewer" class="modal media-modal" style="display:none">
+        <div class="modal-overlay" onclick="window.closeModal()"></div>
+        <div id="media-content"></div>
+    </div>
+
+    <!-- Circle Preview -->
+    <div id="circle-preview" class="modal" style="display:none">
+        <div class="modal-overlay"></div>
+        <div class="circle-modal">
+            <video id="circle-video-preview" muted></video>
+            <p class="recording-text">🔴 Запись...</p>
+            <div class="circle-buttons">
+                <button class="btn-secondary" onclick="window.cancelCircle()">Отмена</button>
+                <button class="btn-primary" onclick="window.stopCircleRecord()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="update-modal" class="modal" style="display:none">
+        <div class="modal-overlay"></div>
+        <div class="update-modal">
+            <div class="update-icon">🚀</div>
+            <h3>Доступно обновление!</h3>
+            <p id="update-version-text">Версия 1.0.1</p>
+            <p class="update-desc">Рекомендуем обновить для новых функций</p>
+            <button class="btn-primary full" onclick="window.downloadUpdate()">⬇ Скачать</button>
+            <button class="btn-text" onclick="window.skipUpdate()">Позже</button>
+        </div>
+    </div>
+
+    <!-- Hidden inputs -->
     <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="window.handleAvatarPick(event)">
     <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="window.handlePhotoPick(event)">
     <input type="file" id="video-input" accept="video/*" style="display:none" onchange="window.handleVideoPick(event)">
     <input type="file" id="file-input" style="display:none" onchange="window.handleFilePick(event)">
 
-    <!-- Update Modal -->
-    <div id="update-modal" class="modal" style="display:none">
-        <div class="modal-content glass">
-            <div style="font-size:50px;margin-bottom:15px">🚀</div>
-            <h2>Доступно обновление!</h2>
-            <p id="update-version-text" style="color:var(--accent);margin:10px 0">Версия 1.0.1</p>
-            <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Рекомендуем обновить приложение для получения новых функций и исправлений</p>
-            <button class="btn-primary" onclick="window.downloadUpdate()">⬇ Скачать обновление</button>
-            <button class="btn-secondary" onclick="window.skipUpdate()">Позже</button>
-        </div>
-    </div>
+    <!-- Toast container -->
+    <div id="toast-container"></div>
 
     <script src="app.js"></script>
 </body>
